@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ReceiptReward.Interfaces;
 using ReceiptReward.Models;
-using ReceiptReward.Services;
 
 namespace ReceiptReward.Controllers
 {

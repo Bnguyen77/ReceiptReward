@@ -1,15 +1,15 @@
-﻿using ReceiptReward.Components;
-using ReceiptReward.Config;
+﻿using ReceiptReward.Config;
+using ReceiptReward.Interfaces;
 using ReceiptReward.Models;
 
 namespace ReceiptReward.Extensions
 {
 	public class RewardOrchestrator
 	{
-		private readonly RewardCalculator _calculator;
+		private readonly IRewardCalculator _calculator;
 		private readonly AppConfig _config;
 
-		public RewardOrchestrator(RewardCalculator calculator, AppConfig config)
+		public RewardOrchestrator(IRewardCalculator calculator, AppConfig config)
 		{
 			_calculator = calculator;
 			_config = config;

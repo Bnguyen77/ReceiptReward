@@ -1,6 +1,7 @@
 using ReceiptReward.Components;
 using ReceiptReward.Config;
 using ReceiptReward.Extensions;
+using ReceiptReward.Interfaces;
 using ReceiptReward.Services;
 
 
@@ -20,6 +21,7 @@ builder.Services.AddSingleton(appConfig); // <--- IMPORTANT
 // Dependency Injection setup
 builder.Services.AddSingleton<RewardCalculator>();
 builder.Services.AddSingleton<RewardOrchestrator>();
+builder.Services.AddSingleton<IRewardCalculator, RewardCalculator>();
 builder.Services.AddSingleton<IReceiptStorage, InMemoryStorage>();
 builder.Services.AddSingleton<IReceiptProcessingService, ReceiptProcessingService>();
 

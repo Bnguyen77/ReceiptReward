@@ -1,6 +1,6 @@
 ﻿using ReceiptReward.Models;
 
-namespace ReceiptReward.Services
+namespace ReceiptReward.Interfaces
 {
 	public interface IReceiptProcessingService
 	{

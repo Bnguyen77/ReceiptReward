@@ -1,4 +1,4 @@
-﻿using ReceiptReward.Services;
+﻿using ReceiptReward.Interfaces;
 using System.Collections.Concurrent;
 
 namespace ReceiptReward.Components

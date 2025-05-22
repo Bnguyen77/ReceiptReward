@@ -1,4 +1,4 @@
-﻿namespace ReceiptReward.Services
+﻿namespace ReceiptReward.Interfaces
 {
 	public interface IReceiptStorage
 	{

@@ -1,5 +1,6 @@
 ﻿using ReceiptReward.Components;
 using ReceiptReward.Extensions;
+using ReceiptReward.Interfaces;
 using ReceiptReward.Models;
 
 namespace ReceiptReward.Services

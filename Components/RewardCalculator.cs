@@ -1,8 +1,9 @@
-﻿using ReceiptReward.Models;
+﻿using ReceiptReward.Interfaces;
+using ReceiptReward.Models;
 
 namespace ReceiptReward.Components
 {
-	public class RewardCalculator
+	public class RewardCalculator : IRewardCalculator
 	{
 		public int RetailerAlphanumaricPoint(string retailer)
 		{
