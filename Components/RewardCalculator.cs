@@ -1,6 +1,6 @@
-﻿using ReceiptPoints.Models;
+﻿using ReceiptReward.Models;
 
-namespace ReceiptPoints.Components
+namespace ReceiptReward.Components
 {
 	public class RewardCalculator
 	{

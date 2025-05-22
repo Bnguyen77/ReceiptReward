@@ -1,44 +1,23 @@
-﻿using ReceiptPoints.Components;
-using ReceiptPoints.Models;
+﻿using ReceiptReward.Components;
+using ReceiptReward.Extensions;
+using ReceiptReward.Models;
 
-namespace ReceiptPoints.Services
+namespace ReceiptReward.Services
 {
-	public class ReceiptProcessingService : IReceiptProcessingService
+	public class ReceiptProcessingService(IReceiptStorage storageService, RewardOrchestrator orchestrator) : IReceiptProcessingService
 	{
-		private readonly InMemoryStorage _storageService;
-		private readonly RewardCalculator _rewardCalculator;
-
-		public ReceiptProcessingService(InMemoryStorage storageService, RewardCalculator calculator)
-		{
-			_storageService = storageService;
-			_rewardCalculator = calculator;
-		}
+		private readonly IReceiptStorage _storageService = storageService;
+		private readonly RewardOrchestrator _orchestrator = orchestrator;
 
 		public string ProcessReceipt(Receipt receipt)
 		{
 			var id = Guid.NewGuid().ToString();
-
-			int points = 0;
-			points += _rewardCalculator.RetailerAlphanumaricPoint(receipt.Retailer);
-			points += _rewardCalculator.TotalRoundDollarPoint(receipt.Total);
-			points += _rewardCalculator.TotalMultipleQuarterPoint(receipt.Total);
-			points += _rewardCalculator.ItemPairsPoint(receipt.Items.Count);
-			points += _rewardCalculator.ItemDescPoint(receipt.Items);
-
-			if (DateOnly.TryParseExact(receipt.PurchaseDate, "yyyy-MM-dd", out var purchaseDate))
-			{
-				points += _rewardCalculator.OddPurchaseDatePoint(purchaseDate);
-			}
-
-			points += _rewardCalculator.AfternoonPurchaseTimePoint(receipt.PurchaseTime);
-
+			int points = _orchestrator.CalculatePoints(receipt);
 			_storageService.Save(id, points);
 			return id;
 		}
 
-		public int GetPointsById(string id)
-		{
-			return _storageService.TryGet(id, out var points) ? points : -1;
-		}
+		public int GetPointsById(string id) =>
+			_storageService.TryGet(id, out var points) ? points : -1;
 	}
 }

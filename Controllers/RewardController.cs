@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ReceiptPoints.Models;
-using ReceiptPoints.Services;
+using ReceiptReward.Models;
+using ReceiptReward.Services;
 
-namespace ReceiptPoints.Controllers
+namespace ReceiptReward.Controllers
 {
 	[ApiController]
 	[Route("receipts")]

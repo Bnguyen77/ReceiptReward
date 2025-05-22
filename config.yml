@@ -1,0 +1,11 @@
+﻿environment: development
+version: V01
+calculations:
+  V01:
+    - RetailerAlphanumeric
+    - TotalRoundDollar
+    - TotalMultipleQuarter
+    - ItemPairs
+    - ItemDesc
+    - OddPurchaseDate
+    - AfternoonPurchaseTime

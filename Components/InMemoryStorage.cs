@@ -1,8 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using ReceiptReward.Services;
+using System.Collections.Concurrent;
 
-namespace ReceiptPoints.Components
+namespace ReceiptReward.Components
 {
-	public class InMemoryStorage
+	public class InMemoryStorage : IReceiptStorage
 	{
 		private readonly ConcurrentDictionary<string, int> _store = new();
 

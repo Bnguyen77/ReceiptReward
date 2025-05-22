@@ -1,10 +1,10 @@
-﻿using ReceiptPoints.Models;
+﻿using ReceiptReward.Models;
 
-namespace ReceiptPoints.Services
+namespace ReceiptReward.Services
 {
 	public interface IReceiptProcessingService
 	{
-		int GetPointsById(string id);
 		string ProcessReceipt(Receipt receipt);
+		int GetPointsById(string id);
 	}
 }

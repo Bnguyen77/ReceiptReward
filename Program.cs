@@ -1,5 +1,7 @@
-using ReceiptPoints.Components;
-using ReceiptPoints.Services;
+using ReceiptReward.Components;
+using ReceiptReward.Config;
+using ReceiptReward.Extensions;
+using ReceiptReward.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,9 +11,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+var appConfig = AppConfig.Load("config.yml");
+
+// Register loaded instance
+builder.Services.AddSingleton(appConfig); // <--- IMPORTANT
+
 // Dependency Injection setup
-builder.Services.AddSingleton<InMemoryStorage>();
 builder.Services.AddSingleton<RewardCalculator>();
+builder.Services.AddSingleton<RewardOrchestrator>();
+builder.Services.AddSingleton<IReceiptStorage, InMemoryStorage>();
 builder.Services.AddSingleton<IReceiptProcessingService, ReceiptProcessingService>();
 
 var app = builder.Build();

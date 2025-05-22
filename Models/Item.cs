@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ReceiptPoints.Models
+namespace ReceiptReward.Models
 {
 	public class Item
 	{
