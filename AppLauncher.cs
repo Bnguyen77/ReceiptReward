@@ -3,7 +3,6 @@ using ReceiptReward.Config;
 using ReceiptReward.Extensions;
 using ReceiptReward.Interfaces;
 using ReceiptReward.Services;
-using System.Diagnostics;
 
 namespace ReceiptReward.Startup
 {
@@ -13,6 +12,8 @@ namespace ReceiptReward.Startup
 
 		public static void Configure(WebApplicationBuilder builder)
 		{
+
+
 			_config = AppConfig.Load("config.yml");
 			builder.Services.AddSingleton(_config);
 
@@ -20,6 +21,7 @@ namespace ReceiptReward.Startup
 			builder.Services.AddSingleton<IRewardCalculator, RewardCalculator>();
 			builder.Services.AddSingleton<IReceiptStorage, InMemoryStorage>();
 			builder.Services.AddSingleton<IReceiptProcessingService, ReceiptProcessingService>();
+			builder.Services.AddSingleton<ITestRunner, TestRunner>();
 			builder.Services.AddSingleton<RewardOrchestrator>();
 
 			builder.Services.AddControllers();
@@ -31,19 +33,33 @@ namespace ReceiptReward.Startup
 			}
 		}
 
-		public static void Run(WebApplication app)
+		public static void ConfigureLogging(ILoggingBuilder logging)
+		{
+			logging.ClearProviders();
+			logging.AddSimpleConsole(options =>
+			{
+				options.SingleLine = true;
+				options.TimestampFormat = "";
+				options.IncludeScopes = false;
+				options.UseUtcTimestamp = false;
+				options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
+			});
+			logging.SetMinimumLevel(LogLevel.Warning);
+		}
+
+		public static void Start(WebApplication app)
 		{
 			var config = app.Services.GetRequiredService<AppConfig>();
-			var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("AppLauncher");
+			var logger = app.Services.GetRequiredService<ILoggerFactory>()
+							.CreateLogger("MyApp");
+
+			logger.LogInformation("Running in {} mode", config.Environment?.Trim());
 
 			if (config.Environment?.Trim().ToLower() == "development")
 			{
-				logger.LogInformation("🔧 Running in DEVELOPMENT mode");
-
-				var service = app.Services.GetRequiredService<IReceiptProcessingService>();
-				TestRunner.Run(service, $"Testing/TestCases/{config.Version.ToLower()}.json");
-
-				logger.LogInformation("✅ Exiting after test run.");
+				var testRunner = app.Services.GetRequiredService<ITestRunner>();
+				testRunner.RunAllTests();
+				logger.LogInformation("Exiting after test run.");
 				Environment.Exit(0);
 			}
 
@@ -54,33 +70,7 @@ namespace ReceiptReward.Startup
 			app.UseAuthorization();
 			app.MapControllers();
 
-			// 🌐 Only launch browser if not running in Docker
-			if (!IsRunningInDocker())
-			{
-				try
-				{
-					var swaggerUrl = "http://localhost:8080/swagger";
-					logger.LogInformation("🌐 Launching browser to: {Url}", swaggerUrl);
-					Process.Start(new ProcessStartInfo
-					{
-						FileName = swaggerUrl,
-						UseShellExecute = true
-					});
-				}
-				catch (Exception ex)
-				{
-					logger.LogWarning(ex, "❌ Failed to launch browser.");
-				}
-			}
-
-			logger.LogInformation("🧭 Application is now starting web server...");
 			app.Run();
-		}
-
-		// ✅ Add this method anywhere in AppLauncher class
-		private static bool IsRunningInDocker()
-		{
-			return File.Exists("/.dockerenv");
 		}
 	}
 }

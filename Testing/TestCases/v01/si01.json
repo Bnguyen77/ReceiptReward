@@ -1,5 +1,6 @@
-[
+
   {
+    "type": "singleInputTest",
     "input": {
       "retailer": "Target",
       "purchaseDate": "2022-01-01",
@@ -28,6 +29,6 @@
         }
       ]
     },
-    "expectedPoints": 28
+    "expectedOutput": "28"
   }
-]
+

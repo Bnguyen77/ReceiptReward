@@ -31,13 +31,15 @@
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-      "publishAllPorts": true,
+      "publishAllPorts": false,
       "useSSL": false,
-      "containerPorts": [ 80 ],
+      "httpPort": 8080,
+      "containerPorts": [ 8080 ],
       "environmentVariables": {
-        "ASPNETCORE_URLS": "http://+:80"
+        "ASPNETCORE_URLS": "http://+:8080"
+        //"ASPNETCORE_URLS": "http://localhost:8080/"
       }
     }
   },

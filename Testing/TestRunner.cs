@@ -1,37 +1,85 @@
-﻿using ReceiptReward.Interfaces;
+﻿using ReceiptReward.Config;
+using ReceiptReward.Interfaces;
+using ReceiptReward.Models;
 using ReceiptReward.Testing;
 using System.Text.Json;
 
-public static class TestRunner
+public class TestRunner : ITestRunner
 {
-	public static void Run(IReceiptProcessingService service, string testFile)
-	{
-		var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger("TestRunner");
+	private readonly IReceiptProcessingService _service;
+	private readonly ILogger<TestRunner> _logger;
+	private readonly string _testFolderPath;
 
-		if (!File.Exists(testFile))
+	public TestRunner(IReceiptProcessingService service,
+	ILogger<TestRunner> logger,
+	AppConfig config)
+	{
+		_service = service;
+		_logger = logger;
+		_testFolderPath = $"{config.Test.Path}/{config.Test.Version}";
+	}
+
+	public void RunAllTests()
+	{
+		if (!Directory.Exists(_testFolderPath))
 		{
-			logger.LogError("❌ Test file not found: {File}", testFile);
+			_logger.LogError("❌ Test folder not found: {Folder}", _testFolderPath);
 			return;
 		}
 
-		var json = File.ReadAllText(testFile);
-		var testCases = JsonSerializer.Deserialize<List<TestCase>>(json, new JsonSerializerOptions
+		var jsonFiles = Directory.GetFiles(_testFolderPath, "*.json");
+		if (jsonFiles.Length == 0)
 		{
-			PropertyNameCaseInsensitive = true
-		});
-
-		int passed = 0;
-		foreach (var test in testCases!)
-		{
-			var id = service.ProcessReceipt(test.Input);
-			var actual = service.GetPointsById(id);
-			var success = actual == test.ExpectedPoints;
-
-			if (success) passed++;
-			logger.LogInformation("Test ID: {Id} | Expected: {Expected} | Actual: {Actual} | Result: {Result}",
-				id, test.ExpectedPoints, actual, success ? "✅ PASS" : "❌ FAIL");
+			_logger.LogWarning("⚠️ No test files found in: {Folder}", _testFolderPath);
+			return;
 		}
 
-		logger.LogInformation("🧪 Test Summary: {Passed}/{Total} passed", passed, testCases.Count);
+		int totalPassed = 0;
+		int totalTests = 0;
+
+		foreach (var file in jsonFiles)
+		{
+			var json = File.ReadAllText(file);
+			var test = JsonSerializer.Deserialize<TestCase>(json, new JsonSerializerOptions
+			{
+				PropertyNameCaseInsensitive = true
+			});
+
+			if (test == null)
+			{
+				_logger.LogWarning("⚠️ Failed to parse test case: {File}", Path.GetFileName(file));
+				continue;
+			}
+
+			// 🧠 Load receipt input files
+			foreach (var inputRef in test.Inputs)
+			{
+				var inputPath = Path.Combine("Testing", "Inputs", inputRef.File);
+				if (!File.Exists(inputPath))
+				{
+					_logger.LogError("❌ Input file not found: {File}", inputRef.File);
+					continue;
+				}
+
+				var inputJson = File.ReadAllText(inputPath);
+				var receipt = JsonSerializer.Deserialize<Receipt>(inputJson);
+				if (receipt == null)
+				{
+					_logger.LogError("❌ Failed to deserialize input: {File}", inputRef.File);
+					continue;
+				}
+
+				test.LoadedReceipts.Add(receipt);
+			}
+
+			totalTests++;
+			var (success, summary) = TestRule.Run(test, _service);
+			if (success) totalPassed++;
+
+			_logger.LogInformation("📄 {File} | Type: {Type} | {Summary}", Path.GetFileName(file), test.Type, summary);
+		}
+
+		_logger.LogInformation("📊 Overall Test Summary: {Passed}/{Total} passed", totalPassed, totalTests);
 	}
+
 }

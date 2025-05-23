@@ -20,7 +20,7 @@ namespace ReceiptReward.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return BadRequest(new { error = "Invalid receipt format. Please verify input." });
+				return BadRequest(new { error = "The receipt is invalid." });
 			}
 
 			var id = _processingService.ProcessReceipt(receipt);
@@ -30,7 +30,7 @@ namespace ReceiptReward.Controllers
 		[HttpGet("{id}/points")]
 		public IActionResult GetPoints(string id)
 		{
-			int result = _processingService.GetPointsById(id);
+			int? result = _processingService.GetPointsById(id);
 			if (result != null)
 			{
 				return Ok(new { points = result });

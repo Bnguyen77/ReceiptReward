@@ -1,7 +1,8 @@
-﻿environment: development
+﻿version: V01
+
+environment: development
 #environment: production
 
-version: V01
 calculations:
   V01:
     - RetailerAlphanumeric
@@ -11,3 +12,7 @@ calculations:
     - ItemDesc
     - OddPurchaseDate
     - AfternoonPurchaseTime
+
+test:
+  version: v01
+  path: Testing/TestCases/ 

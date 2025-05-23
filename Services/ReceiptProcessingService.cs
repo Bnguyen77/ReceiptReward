@@ -1,5 +1,4 @@
-﻿using ReceiptReward.Components;
-using ReceiptReward.Extensions;
+﻿using ReceiptReward.Extensions;
 using ReceiptReward.Interfaces;
 using ReceiptReward.Models;
 
