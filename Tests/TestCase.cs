@@ -1,7 +1,7 @@
 ﻿using ReceiptReward.Models;
 using System.Text.Json.Serialization;
 
-namespace ReceiptReward.Testing
+namespace ReceiptReward.Tests
 {
 	public class TestInputReference
 	{

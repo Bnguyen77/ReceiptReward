@@ -1,7 +1,7 @@
 ﻿using ReceiptReward.Config;
 using ReceiptReward.Interfaces;
 using ReceiptReward.Models;
-using ReceiptReward.Testing;
+using ReceiptReward.Tests;
 using System.Text.Json;
 
 public class TestRunner : ITestRunner
@@ -23,14 +23,14 @@ public class TestRunner : ITestRunner
 	{
 		if (!Directory.Exists(_testFolderPath))
 		{
-			_logger.LogError("❌ Test folder not found: {Folder}", _testFolderPath);
+			_logger.LogError(" Test folder not found: {Folder}", _testFolderPath);
 			return;
 		}
 
 		var jsonFiles = Directory.GetFiles(_testFolderPath, "*.json");
 		if (jsonFiles.Length == 0)
 		{
-			_logger.LogWarning("⚠️ No test files found in: {Folder}", _testFolderPath);
+			_logger.LogWarning(" No test files found in: {Folder}", _testFolderPath);
 			return;
 		}
 
@@ -47,39 +47,40 @@ public class TestRunner : ITestRunner
 
 			if (test == null)
 			{
-				_logger.LogWarning("⚠️ Failed to parse test case: {File}", Path.GetFileName(file));
+				_logger.LogWarning(" Failed to parse test case: {File}", Path.GetFileName(file));
 				continue;
 			}
 
-			// 🧠 Load receipt input files
 			foreach (var inputRef in test.Inputs)
 			{
-				var inputPath = Path.Combine("Testing", "Inputs", inputRef.File);
+				var inputPath = Path.Combine("Tests", "Inputs", "v01", inputRef.File);
 				if (!File.Exists(inputPath))
 				{
-					_logger.LogError("❌ Input file not found: {File}", inputRef.File);
+					_logger.LogError(" Input file not found: {File}", inputRef.File);
 					continue;
 				}
 
 				var inputJson = File.ReadAllText(inputPath);
+
 				var receipt = JsonSerializer.Deserialize<Receipt>(inputJson);
 				if (receipt == null)
 				{
-					_logger.LogError("❌ Failed to deserialize input: {File}", inputRef.File);
+					_logger.LogError(" Failed to deserialize input: {File}", inputRef.File);
 					continue;
 				}
 
 				test.LoadedReceipts.Add(receipt);
+				Console.WriteLine(test);
 			}
 
 			totalTests++;
 			var (success, summary) = TestRule.Run(test, _service);
 			if (success) totalPassed++;
 
-			_logger.LogInformation("📄 {File} | Type: {Type} | {Summary}", Path.GetFileName(file), test.Type, summary);
+			_logger.LogInformation(" {File} | Type: {Type} | {Summary}", Path.GetFileName(file), test.Type, summary);
 		}
 
-		_logger.LogInformation("📊 Overall Test Summary: {Passed}/{Total} passed", totalPassed, totalTests);
+		_logger.LogInformation(" Overall Test Summary: {Passed}/{Total} passed", totalPassed, totalTests);
 	}
 
 }

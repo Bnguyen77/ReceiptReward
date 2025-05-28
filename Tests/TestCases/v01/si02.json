@@ -1,0 +1,9 @@
+{
+  "type": "singleInputTest",
+  "inputs": [
+    {
+      "file": "input2.json",
+      "expectedOutput": "109"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 ﻿using ReceiptReward.Interfaces;
-using ReceiptReward.Testing;
+using ReceiptReward.Tests;
 
 public static class TestRule
 {
@@ -14,7 +14,7 @@ public static class TestRule
 		var key = testCase.Type.Trim().ToLower();
 		if (!_rules.TryGetValue(key, out var rule))
 		{
-			return (false, $"❌ Unknown test type: {testCase.Type}");
+			return (false, $" Unknown test type: {testCase.Type}");
 		}
 
 		return rule(testCase, service);
@@ -22,13 +22,19 @@ public static class TestRule
 
 	private static (bool, string) SingleInputTest(TestCase test, IReceiptProcessingService service)
 	{
-		var id = service.ProcessReceipt(test.Input);
-		var actual = service.GetPointsById(id).ToString();
-		var success = actual == test.ExpectedOutput;
+		if (test.LoadedReceipts.Count != 1 || test.Inputs.Count != 1)
+			return (false, " singleInputTest requires exactly one input and one expectedOutput");
 
-		var summary = $"Expected: {test.ExpectedOutput}, Actual: {actual}, Result: {(success ? "✅ PASS" : "❌ FAIL")}";
+		var receipt = test.LoadedReceipts[0];
+		var expected = test.Inputs[0].ExpectedOutput;
+
+		var id = service.ProcessReceipt(receipt);
+		var sss = service.GetPointsById(id);
+		var actual = service.GetPointsById(id).ToString();
+		var success = actual == expected;
+
+		var summary = $"Expected: {expected}, Actual: {actual}, Result: {(success ? " PASS" : " FAIL")}";
 		return (success, summary);
 	}
 
-	// Future types: Add more methods and register them in _rules
 }

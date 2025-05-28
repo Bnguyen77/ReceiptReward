@@ -15,4 +15,4 @@ calculations:
 
 test:
   version: v01
-  path: Testing/TestCases/ 
+  path: Tests/TestCases
