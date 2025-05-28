@@ -17,7 +17,10 @@ namespace ReceiptReward.Services
 			return id;
 		}
 
-		public int GetPointsById(string id) =>
-			_storageService.TryGet(id, out var points) ? points : -1;
+		public int? GetPointsById(string id)
+		{
+			return _storageService.TryGet(id, out var points) ? points : (int?)null;
+		}
+
 	}
 }

@@ -1,7 +1,7 @@
 ﻿version: V01
 
-environment: development
-#environment: production
+#environment: development
+environment: production
 
 calculations:
   V01:
